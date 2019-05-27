@@ -4,9 +4,9 @@ import qualified Data.ByteString.Char8 as BS
 
 newtype File = File { fileElements :: [FileElement] } deriving (Eq, Show)
 
-newtype FileElement = FileElement
-  { commandInvocation :: CommandInvocation
-  }
+data FileElement
+  = CommandElement { commandInvocation :: CommandInvocation }
+  | NonCommandElement
   deriving (Eq, Show)
 
 data CommandInvocation = CommandInvocation
