@@ -10,8 +10,8 @@ newtype FileElement = FileElement
   deriving (Eq, Show)
 
 data CommandInvocation = CommandInvocation
-  { identifier :: BS.ByteString
-  , arguments :: [Argument]
+  { commandId :: BS.ByteString
+  , commandArgs :: [Argument]
   }
   deriving (Eq, Show)
 
