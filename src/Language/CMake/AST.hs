@@ -20,7 +20,9 @@ data LiteralElem
   | VariableReference { variableName :: BS.ByteString }
   deriving (Eq, Show)
 
+newtype Literal = Literal { literalParts :: [LiteralElem] } deriving (Eq, Show)
+
 newtype Argument = Argument
-  { argument :: BS.ByteString
+  { argumentLiteral :: Literal
   }
   deriving (Eq, Show)
