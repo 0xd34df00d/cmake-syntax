@@ -25,6 +25,11 @@ data LiteralElem
 newtype Literal = Literal { literalParts :: [LiteralElem] }
   deriving (Eq, Show, Semigroup, Monoid)
 
+litFromString :: BS.ByteString -> Literal
+litFromString = Literal . pure . LiteralString
 
 newtype Argument = Argument { argumentLiteral :: Literal }
   deriving (Eq, Show, Semigroup, Monoid)
+
+argFromString :: String -> Argument
+argFromString = Argument . litFromString . BS.pack
