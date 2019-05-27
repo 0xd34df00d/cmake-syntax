@@ -1,3 +1,5 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
 module Language.CMake.AST where
 
 import qualified Data.ByteString.Char8 as BS
@@ -20,9 +22,9 @@ data LiteralElem
   | VariableReference { variableName :: BS.ByteString }
   deriving (Eq, Show)
 
-newtype Literal = Literal { literalParts :: [LiteralElem] } deriving (Eq, Show)
+newtype Literal = Literal { literalParts :: [LiteralElem] }
+  deriving (Eq, Show, Semigroup, Monoid)
 
-newtype Argument = Argument
-  { argumentLiteral :: Literal
-  }
-  deriving (Eq, Show)
+
+newtype Argument = Argument { argumentLiteral :: Literal }
+  deriving (Eq, Show, Semigroup, Monoid)
