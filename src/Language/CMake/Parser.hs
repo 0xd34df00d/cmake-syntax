@@ -36,7 +36,7 @@ commandInvocation = do
 arguments :: Parser [Argument]
 arguments = do
   arg <- maybeToList <$> optional argument
-  rest <- separatedArguments
+  rest <- concat <$> many separatedArguments
   pure $ arg <> rest
 
 separatedArguments :: Parser [Argument]
