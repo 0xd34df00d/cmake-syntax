@@ -29,7 +29,7 @@ commandInvocation = do
   void $ many space
   commandId <- BS.pack <$> some ('A' ~~ 'Z' <|> 'a' ~~ 'z' <|> char '_' <|> '0' ~~ '9')
   void $ many space
-  commandArgs <- parens arguments
+  commandArgs <- between (char '(') (char ')') arguments
   pure CommandInvocation { .. }
   where (~~) = satisfyRange
 
@@ -41,7 +41,7 @@ arguments = do
 
 separatedArguments :: Parser [Argument]
 separatedArguments = maybeToList <$> try (some separation *> optional argument)
-                 <|> many separation *> parens arguments
+                 <|> many separation *> between (char '(') (char ')') arguments
 
 separation :: Parser ()
 separation = void space <|> lineEnding
