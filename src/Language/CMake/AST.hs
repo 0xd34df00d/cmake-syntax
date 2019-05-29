@@ -3,6 +3,7 @@
 module Language.CMake.AST where
 
 import qualified Data.ByteString.Char8 as BS
+import Data.String
 
 newtype File = File { fileElements :: [FileElement] } deriving (Eq, Show)
 
@@ -25,11 +26,11 @@ data LiteralElem
 newtype Literal = Literal { literalParts :: [LiteralElem] }
   deriving (Eq, Show, Semigroup, Monoid)
 
-litFromString :: BS.ByteString -> Literal
-litFromString = Literal . pure . LiteralString
+instance IsString Literal where
+  fromString = Literal . pure . LiteralString . BS.pack
 
 newtype Argument = Argument { argumentLiteral :: Literal }
   deriving (Eq, Show, Semigroup, Monoid)
 
-argFromString :: String -> Argument
-argFromString = Argument . litFromString . BS.pack
+instance IsString Argument where
+  fromString = Argument . fromString

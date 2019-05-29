@@ -9,6 +9,7 @@ import Control.Applicative
 import Data.Char
 import Data.Functor
 import Data.Maybe
+import Data.String
 import Text.RawString.QQ
 import Text.Trifecta
 
@@ -53,16 +54,16 @@ bracketArgument :: Parser Argument
 bracketArgument = do
   opening <- char '[' *> many (char '=') <* char '['
   let closing = string $ "]" <> opening <> "]"
-  argFromString <$> anyChar `manyTill` try closing
+  fromString <$> anyChar `manyTill` try closing
 
 quotedArgument :: Parser Argument
-quotedArgument = argFromString <$> many quotedElement `surroundedBy` char '"'
+quotedArgument = fromString <$> many quotedElement `surroundedBy` char '"'
 
 quotedElement :: Parser Char
 quotedElement = noneOf [r|\"|] <|> escapeSequence <|> char '\\' *> newline
 
 unquotedArgument :: Parser Argument
-unquotedArgument = argFromString <$> some (satisfy unElem <|> escapeSequence)
+unquotedArgument = fromString <$> some (satisfy unElem <|> escapeSequence)
   where unElem c = c `notElem` [r|()#\"|] && not (isSpace c)
 
 escapeSequence :: Parser Char
