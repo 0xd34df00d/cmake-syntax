@@ -26,9 +26,9 @@ lineEnding = skipOptional lineComment >> void newline
 
 commandInvocation :: Parser CommandInvocation
 commandInvocation = do
-  void $ many space
+  spaces
   commandId <- BS.pack <$> some ('A' ~~ 'Z' <|> 'a' ~~ 'z' <|> char '_' <|> '0' ~~ '9')
-  void $ many space
+  spaces
   commandArgs <- between (char '(') (char ')') arguments
   pure CommandInvocation { .. }
   where (~~) = satisfyRange
