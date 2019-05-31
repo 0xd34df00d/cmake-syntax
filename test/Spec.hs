@@ -19,7 +19,6 @@ instance Eq a => Eq (Result a) where
 main :: IO ()
 main = hspec $
   describe "Parsing simple commands" $ do
-
     it "without args"
         $ [r|add_executable()|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" [] ]
@@ -29,3 +28,6 @@ main = hspec $
     it "with several simple args"
         $ [r|add_executable(foo bar baz)|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo", "bar", "baz"] ]
+    it "with leading spaces"
+        $ [r|    add_executable()|]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" [] ]
