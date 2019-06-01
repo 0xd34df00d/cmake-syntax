@@ -1,6 +1,7 @@
 {-# LANGUAGE QuasiQuotes, OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
+import Data.Char
 import Test.Hspec
 import Text.RawString.QQ
 import Text.Trifecta.Parser
@@ -17,18 +18,18 @@ instance Eq a => Eq (Result a) where
 (~~>) :: HasCallStack => String -> File -> Expectation
 (~~>) str res = parseString fileParser mempty (str <> "\n") `shouldBe` Success res
 
+dropLeading :: String -> String
+dropLeading str = init $ unlines $ l : (drop numSpaces <$> init ls)
+  where
+    (l:ls) = lines str
+    numSpaces = length $ takeWhile isSpace $ last ls
+
 main :: IO ()
 main = hspec $ do
   describe "Parsing simple commands" $ do
     it "without args"
         $ [r|add_executable()|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" [] ]
-    it "with one arg"
-        $ [r|add_executable(foo)|]
-      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo"] ]
-    it "with several simple args"
-        $ [r|add_executable(foo bar baz)|]
-      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo", "bar", "baz"] ]
     it "with leading spaces"
         $ [r|    add_executable()|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" [] ]
@@ -79,3 +80,40 @@ main = hspec $ do
              ]===]
              ]==]|]
       ~~> File [NonCommandElement]
+  describe "Parsing command arguments" $ do
+    it "parses command with one arg"
+        $ [r|add_executable(foo)|]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo"] ]
+    it "parses command with several simple args"
+        $ [r|add_executable(foo bar baz)|]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo", "bar", "baz"] ]
+    it "parses command with bracket arguments"
+        $ dropLeading
+          [r|add_executable([==[
+            This is a bracket argument
+            ]==])
+            |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["\nThis is a bracket argument\n"] ]
+    it "parses command with multiline bracket arguments"
+        $ dropLeading
+          [r|add_executable([==[
+            This is a
+            bracket
+            argument
+            ]==])
+            |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["\nThis is a\nbracket\nargument\n"] ]
+    it "does not escape in bracket arguments"
+        $ dropLeading
+          [r|add_executable([==[
+            This is \t \; \n a \- bracket argument \meh
+            ]==])
+            |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["\nThis is \\t \\; \\n a \\- bracket argument \\meh\n"] ]
+    it "does not expand variables in bracket arguments"
+        $ dropLeading
+          [r|add_executable([==[
+            This is a ${bracket} argument
+            ]==])
+            |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["\nThis is a ${bracket} argument\n"] ]
