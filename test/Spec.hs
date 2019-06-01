@@ -34,6 +34,9 @@ main = hspec $ do
     it "empty line"
         $ [r||]
       ~~> File [ NonCommandElement ]
+    it "empty line with spaces"
+        $ "   \t  "
+      ~~> File [ NonCommandElement ]
   describe "Parsing a sequence of commands" $ do
     it "without args"
         $ [r|add_executable()
