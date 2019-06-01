@@ -58,10 +58,11 @@ bracketArgument = do
   fromString <$> anyChar `manyTill` try closing
 
 quotedArgument :: Parser Argument
-quotedArgument = fromString <$> many quotedElement `surroundedBy` char '"'
+quotedArgument = fromString . catMaybes <$> many quotedElement `surroundedBy` char '"'
 
-quotedElement :: Parser Char
-quotedElement = noneOf [r|\"|] <|> try escapeSequence <|> char '\\' *> newline
+quotedElement :: Parser (Maybe Char)
+quotedElement = Just <$> (noneOf [r|\"|] <|> try escapeSequence)
+            <|> (char '\\' *> newline $> Nothing)
 
 unquotedArgument :: Parser Argument
 unquotedArgument = fromString <$> some (satisfy unElem <|> escapeSequence)
