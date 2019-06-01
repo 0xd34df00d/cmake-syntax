@@ -20,7 +20,7 @@ fileParser = File <$> many fileElement <* eof
 
 fileElement :: Parser FileElement
 fileElement = try (many (try bracketComment <|> spaceNonLF) *> lineEnding $> NonCommandElement)
-          <|> (CommandElement <$> commandInvocation) <* lineEnding
+          <|> (CommandElement <$> commandInvocation) <* many spaceNonLF <* lineEnding
   where spaceNonLF = void $ satisfy $ \c -> isSpace c && c /= '\n'
 
 lineEnding :: Parser ()
