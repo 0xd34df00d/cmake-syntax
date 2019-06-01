@@ -61,7 +61,7 @@ quotedArgument :: Parser Argument
 quotedArgument = fromString <$> many quotedElement `surroundedBy` char '"'
 
 quotedElement :: Parser Char
-quotedElement = noneOf [r|\"|] <|> escapeSequence <|> char '\\' *> newline
+quotedElement = noneOf [r|\"|] <|> try escapeSequence <|> char '\\' *> newline
 
 unquotedArgument :: Parser Argument
 unquotedArgument = fromString <$> some (satisfy unElem <|> escapeSequence)
