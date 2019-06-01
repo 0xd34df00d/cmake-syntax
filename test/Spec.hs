@@ -80,13 +80,14 @@ main = hspec $ do
              ]===]
              ]==]|]
       ~~> File [NonCommandElement]
-  describe "Parsing command arguments" $ do
+  describe "Parsing simple command arguments" $ do
     it "parses command with one arg"
         $ [r|add_executable(foo)|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo"] ]
     it "parses command with several simple args"
         $ [r|add_executable(foo bar baz)|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo", "bar", "baz"] ]
+  describe "Parsing bracket command arguments" $ do
     it "parses command with bracket arguments"
         $ dropLeading
           [r|add_executable([==[
@@ -117,3 +118,32 @@ main = hspec $ do
             ]==])
             |]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" ["\nThis is a ${bracket} argument\n"] ]
+  describe "Parsing quoted command arguments" $ do
+    it "parses command with one arg"
+        $ [r|add_executable("foo")|]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo"] ]
+    it "parses command with multple args"
+        $ [r|add_executable("foo" "bar")|]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo", "bar"] ]
+    it "parses command with multiline arg"
+        $ dropLeading
+          [r|add_executable("foo
+             bar
+             baz")
+             |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo\nbar\nbaz"] ]
+    it "parses command with multiline arg and final line feed"
+        $ dropLeading
+          [r|add_executable("foo
+             bar
+             baz
+             ")
+             |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo\nbar\nbaz\n"] ]
+    it "parses command with single-line arg spanning multiple lines"
+        $ dropLeading
+          [r|add_executable("foo \
+             bar \
+             baz")
+             |]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" ["foo bar baz"] ]
