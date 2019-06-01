@@ -19,8 +19,9 @@ fileParser :: Parser File
 fileParser = File <$> many fileElement
 
 fileElement :: Parser FileElement
-fileElement = try (many (bracketComment <|> void space) *> lineEnding $> NonCommandElement)
+fileElement = try (many (bracketComment <|> spaceNonLF) *> lineEnding $> NonCommandElement)
           <|> (CommandElement <$> commandInvocation) <* lineEnding
+  where spaceNonLF = void $ satisfy $ \c -> isSpace c && c /= '\n'
 
 lineEnding :: Parser ()
 lineEnding = skipOptional lineComment >> void newline
