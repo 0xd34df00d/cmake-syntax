@@ -11,6 +11,7 @@ import Language.CMake.Parser
 
 instance Eq a => Eq (Result a) where
   Success a == Success b = a == b
+  Failure _ == Failure _ = True
   _ == _ = False
 
 (~~>) :: String -> File -> Expectation
