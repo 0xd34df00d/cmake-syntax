@@ -17,7 +17,7 @@ instance Eq a => Eq (Result a) where
 (~~>) str res = parseString fileParser mempty (str <> "\n") `shouldBe` Success res
 
 main :: IO ()
-main = hspec $
+main = hspec $ do
   describe "Parsing simple commands" $ do
     it "without args"
         $ [r|add_executable()|]
@@ -34,3 +34,10 @@ main = hspec $
     it "empty line"
         $ [r||]
       ~~> File [ NonCommandElement ]
+  describe "Parsing a sequence of commands" $ do
+    it "without args"
+        $ [r|add_executable()
+             add_library()|]
+      ~~> File [ CommandElement $ CommandInvocation "add_executable" []
+               , CommandElement $ CommandInvocation "add_library" []
+               ]
