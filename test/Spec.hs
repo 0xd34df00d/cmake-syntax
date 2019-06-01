@@ -31,3 +31,6 @@ main = hspec $
     it "with leading spaces"
         $ [r|    add_executable()|]
       ~~> File [ CommandElement $ CommandInvocation "add_executable" [] ]
+    it "empty line"
+        $ [r||]
+      ~~> File [ NonCommandElement ]
