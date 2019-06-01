@@ -14,7 +14,7 @@ instance Eq a => Eq (Result a) where
   Failure _ == Failure _ = True
   _ == _ = False
 
-(~~>) :: String -> File -> Expectation
+(~~>) :: HasCallStack => String -> File -> Expectation
 (~~>) str res = parseString fileParser mempty (str <> "\n") `shouldBe` Success res
 
 main :: IO ()
