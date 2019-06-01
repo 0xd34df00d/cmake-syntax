@@ -44,3 +44,14 @@ main = hspec $ do
       ~~> File [ CommandElement $ CommandInvocation "add_executable" []
                , CommandElement $ CommandInvocation "add_library" []
                ]
+  describe "Parsing comments" $ do
+    it "parses single whole-line comment"
+        $ [r|# this is a comment|]
+      ~~> File [NonCommandElement]
+    it "parses multiple whole-line comments"
+        $ [r|# this is a comment
+             # and this is a continuation|]
+      ~~> File [NonCommandElement, NonCommandElement]
+    it "parses end-of-line comments"
+        $ [r|add_library() # this is a comment|]
+      ~~> File [CommandElement $ CommandInvocation "add_library" []]
