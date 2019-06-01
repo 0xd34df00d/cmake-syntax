@@ -56,3 +56,26 @@ main = hspec $ do
     it "parses end-of-line comments"
         $ [r|add_library() # this is a comment|]
       ~~> File [CommandElement $ CommandInvocation "add_library" []]
+  describe "Bracket comments" $ do
+    it "parses simplest empty bracket comments"
+        $ [r|#[[]]|]
+      ~~> File [NonCommandElement]
+    it "parses zero-eq bracket comments with text"
+        $ [r|#[[ foobar ]]|]
+      ~~> File [NonCommandElement]
+    it "parses non-zero-eq bracket comments with text"
+        $ [r|#[==[ foobar ]==]|]
+      ~~> File [NonCommandElement]
+    it "parses non-zero-eq bracket comments with nested eqs (less)"
+        $ [r|#[==[ ]=] ]==]|]
+      ~~> File [NonCommandElement]
+    it "parses non-zero-eq bracket comments with nested eqs (more)"
+        $ [r|#[==[ ]===] ]==]|]
+      ~~> File [NonCommandElement]
+    it "parses multilinenon-zero-eq bracket comments"
+        $ [r|#[==[ foobar
+             ]=]
+             fdsafsdahljkrew hjkfdshafkjlashjk
+             ]===]
+             ]==]|]
+      ~~> File [NonCommandElement]
