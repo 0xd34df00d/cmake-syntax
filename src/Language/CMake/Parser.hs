@@ -16,7 +16,7 @@ import Text.Trifecta
 import Language.CMake.AST hiding(commandInvocation)
 
 fileParser :: Parser File
-fileParser = File <$> many fileElement
+fileParser = File <$> many fileElement <* eof
 
 fileElement :: Parser FileElement
 fileElement = try (many (bracketComment <|> spaceNonLF) *> lineEnding $> NonCommandElement)
