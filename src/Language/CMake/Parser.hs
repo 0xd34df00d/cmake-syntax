@@ -19,7 +19,7 @@ fileParser :: Parser File
 fileParser = File <$> many fileElement
 
 fileElement :: Parser FileElement
-fileElement = (bracketComment <|> void space) *> lineEnding $> NonCommandElement
+fileElement = many (bracketComment <|> void space) *> lineEnding $> NonCommandElement
           <|> (CommandElement <$> commandInvocation) <* lineEnding
 
 lineEnding :: Parser ()
